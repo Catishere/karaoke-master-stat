@@ -25,7 +25,7 @@ knex.schema.hasTable('users').then((exists) => {
     }
 });
 
-router.get('/add/:machine_id', function(req, res) {
+router.get('/add/:machine_id', async (req, res) => {
     const [user] = await knex('users')
     .insert({
         machine_id: req.params.machine_id,
