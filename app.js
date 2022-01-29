@@ -8,7 +8,6 @@ const router = express.Router();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const connectionString = process.env.DATABASE_URL;
 const knex = require('knex')({
     client: 'pg',
     connection: {
@@ -16,8 +15,6 @@ const knex = require('knex')({
         ssl: { rejectUnauthorized: false }
     }
 })
-
-const bookshelf = require('bookshelf')(knex)
 
 knex.schema.hasTable('users').then((exists) => {
     if (!exists) {
@@ -28,12 +25,8 @@ knex.schema.hasTable('users').then((exists) => {
     }
 });
 
-const User = bookshelf.model('User', {
-    tableName: 'users'
-});
-
 router.get('/add/:machine_id', function(req, res) {
-    User
+    knex('users')
     .upsert({
         machine_id: req.params.machine_id,
         launch_count: 1
