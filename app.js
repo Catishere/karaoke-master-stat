@@ -26,15 +26,16 @@ knex.schema.hasTable('users').then((exists) => {
 });
 
 router.get('/add/:machine_id', async (req, res) => {
-    const [user] = await knex('users')
-    .insert({
-        machine_id: req.params.machine_id,
-        launch_count: 1
-    })
-    .onConflict('machine_id')
-    .merge({
-        launch_count: knex.raw('users.launch_count + 1')
-    });
+    const user = await knex.table('users').first('id', 'name');
+    if (user) {
+        await knex('users').where('machine_id', req.params.machine_id).increment('launch_count');
+    } else {
+        await knex('users').insert({
+            machine_id: req.params.machine_id,
+            launch_count: 1
+        });
+    }
+
     if (user) {
         res.send(`Added user ${user.machine_id} with ${user.launch_count} launch(s)`);
     }
