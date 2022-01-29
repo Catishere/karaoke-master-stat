@@ -28,14 +28,20 @@ knex.schema.hasTable('users').then((exists) => {
     }
 });
 
+const User = bookshelf.model('User', {
+    tableName: 'users'
+});
+
 router.get('/add/:machine_id', function(req, res) {
-    knex('users')
-    .insert({
+    User
+    .upsert({
         machine_id: req.params.machine_id,
+        launch_count: 1
     })
-    .increment('launch_count', 1)
-    .onConflict('machine_id')
-    .merge();
+    .onConflict(['machine_id'])
+    .merge({
+        launch_count: User.knex().raw('launch_count + 1')
+    });
     res.send('Added');
 });
 
