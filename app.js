@@ -33,7 +33,7 @@ router.get('/add/:machine_id', async (req, res) => {
     })
     .onConflict('machine_id')
     .merge({
-        launch_count: knex.raw("?? + ?", ["launch_count", 1])
+        launch_count: knex.raw('users.launch_count + 1')
     });
     if (user) {
         res.send(`Added user ${user.machine_id} with ${user.launch_count} launch(s)`);
